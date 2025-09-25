@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RNG Frequency Result</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; margin-top: 40px; }
+    .result-box { padding: 20px; border: 2px solid #333; display: inline-block; border-radius: 10px; }
+    .number { font-size: 2em; font-weight: bold; margin: 10px 0; }
+    .small { color: blue; }
+    .big { color: red; }
+  </style>
+</head>
+<body>
+  <h1>Final RNG Frequency Result</h1>
+  <div class="result-box">
+    <p>Previous: <span id="previous">-</span></p>
+    <p>Final: <span id="final" class="number">-</span></p>
+    <p>CSRNG: <span id="csrng">-</span></p>
+    <p>QRNG: <span id="qrng">-</span></p>
+    <p>Random.org: <span id="randomOrg">-</span></p>
+  </div>
+
+  <script>
+    async function fetchResult() {
+      try {
+        const res = await fetch("/result");
+        const data = await res.json();
+        document.getElementById("previous").innerText = data.previous ?? "-";
+        document.getElementById("final").innerText = data.final;
+        document.getElementById("final").className = data.final >= 5 ? "number big" : "number small";
+        document.getElementById("csrng").innerText = data.sources.csrng;
+        document.getElementById("qrng").innerText = data.sources.qrng;
+        document.getElementById("randomOrg").innerText = data.sources.randomOrg;
+      } catch (e) {
+        console.error("Error fetching result", e);
+      }
+    }
+    setInterval(fetchResult, 10000);
+    fetchResult();
+  </script>
+</body>
+</html>
